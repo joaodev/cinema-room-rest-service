@@ -1,15 +1,18 @@
 package br.com.joaodev.cinemaroomrestservice.controller;
 
+import br.com.joaodev.cinemaroomrestservice.dto.PurchaseRequest;
+import br.com.joaodev.cinemaroomrestservice.dto.PurchaseResponse;
 import br.com.joaodev.cinemaroomrestservice.model.Cinema;
 import br.com.joaodev.cinemaroomrestservice.model.Seat;
+import br.com.joaodev.cinemaroomrestservice.model.Ticket;
 import br.com.joaodev.cinemaroomrestservice.service.CinemaService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -23,5 +26,10 @@ public class CinemaController {
     @GetMapping("/seats")
     public Cinema getSeats() {
         return cinemaService.getSeats();
+    }
+
+    @PostMapping("/purchase")
+    public ResponseEntity<PurchaseResponse> purchase(@RequestBody PurchaseRequest req) {
+        return ResponseEntity.ok(cinemaService.purchase(req));
     }
 }
