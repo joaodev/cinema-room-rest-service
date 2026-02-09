@@ -1,9 +1,6 @@
 package br.com.joaodev.cinemaroomrestservice.service;
 
-import br.com.joaodev.cinemaroomrestservice.dto.PurchaseRequest;
-import br.com.joaodev.cinemaroomrestservice.dto.PurchaseResponse;
-import br.com.joaodev.cinemaroomrestservice.dto.ReturnRequest;
-import br.com.joaodev.cinemaroomrestservice.dto.ReturnResponse;
+import br.com.joaodev.cinemaroomrestservice.dto.*;
 import br.com.joaodev.cinemaroomrestservice.exception.SeatAlreadyPurchasedException;
 import br.com.joaodev.cinemaroomrestservice.exception.SeatOutOfBoundsException;
 import br.com.joaodev.cinemaroomrestservice.exception.WrongTokenException;
@@ -73,6 +70,14 @@ public class CinemaService {
         seat.setAvailable(true);
         Ticket ticket = new Ticket(seat.getRow(), seat.getColumn(), seat.getPrice());
         return new ReturnResponse(ticket);
+    }
+
+    public StatsResponse getStats() {
+        int purchased = purchasedSeatsByToken.size();
+        int total = seatsByPos.size();
+        int available = total - purchased;
+        int income = purchasedSeatsByToken.values().stream().mapToInt(Seat::getPrice).sum();
+        return new StatsResponse(income, available, purchased);
     }
 
     private void validateBounds(int row, int column) {

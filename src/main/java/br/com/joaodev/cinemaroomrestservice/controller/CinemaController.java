@@ -1,18 +1,12 @@
 package br.com.joaodev.cinemaroomrestservice.controller;
 
-import br.com.joaodev.cinemaroomrestservice.dto.PurchaseRequest;
-import br.com.joaodev.cinemaroomrestservice.dto.PurchaseResponse;
-import br.com.joaodev.cinemaroomrestservice.dto.ReturnRequest;
-import br.com.joaodev.cinemaroomrestservice.dto.ReturnResponse;
+import br.com.joaodev.cinemaroomrestservice.dto.*;
 import br.com.joaodev.cinemaroomrestservice.model.Cinema;
 import br.com.joaodev.cinemaroomrestservice.model.Seat;
 import br.com.joaodev.cinemaroomrestservice.model.Ticket;
 import br.com.joaodev.cinemaroomrestservice.service.CinemaService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -38,5 +32,10 @@ public class CinemaController {
     @PostMapping("/return")
     public ResponseEntity<ReturnResponse> returnTicket(@RequestBody ReturnRequest req) {
         return ResponseEntity.ok(cinemaService.returnTicket(req));
+    }
+
+    @GetMapping("/stats")
+    public ResponseEntity<StatsResponse> getStats() {
+        return ResponseEntity.ok(cinemaService.getStats());
     }
 }
