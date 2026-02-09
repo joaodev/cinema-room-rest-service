@@ -23,21 +23,20 @@ public class CinemaService {
     private static final int ROWS = 9;
     private static final int COLUMNS = 9;
 
-    private List<Seat> allSeats;
-    private final Map<String, Seat> purchasedSeats = new ConcurrentHashMap<>();
+    private Map<String, Seat> seatsByPos = new ConcurrentHashMap<>();
+    private final Map<String, Seat> purchasedSeatsByToken = new ConcurrentHashMap<>();
 
     @PostConstruct
     void init() {
-        allSeats = new ArrayList<>();
         for (int r = 1; r <= ROWS; r++) {
             for (int c = 1; c <= COLUMNS; c++) {
-                allSeats.add(new Seat(r, c));
+                seatsByPos.put(key(r, c), new Seat(r, c));
             }
         }
     }
 
     public Cinema getSeats() {
-        List<Seat> availableSeats = allSeats.stream()
+        List<Seat> availableSeats = seatsByPos.values().stream()
                 .filter(Seat::isAvailable)
                 .collect(Collectors.toList());
 
@@ -47,7 +46,9 @@ public class CinemaService {
     public synchronized PurchaseResponse purchase(PurchaseRequest req) {
         validateBounds(req.getRow(), req.getColumn());
 
-        Seat seat = findSeat(req.getRow(), req.getColumn());
+        String posKey = key(req.getRow(), req.getColumn());
+        Seat seat = seatsByPos.get(posKey);
+
         if (seat == null || !seat.isAvailable()) {
             throw new SeatAlreadyPurchasedException();
         }
@@ -68,7 +69,7 @@ public class CinemaService {
     }
 
     private Seat findSeat(int row, int column) {
-        for (Seat seat : allSeats) {
+        for (Seat seat : seatsByPos.values()) {
             if (seat.getRow() == row && seat.getColumn() == column) {
                 return seat;
             }
@@ -84,16 +85,24 @@ public class CinemaService {
         return COLUMNS;
     }
 
-    public List<Seat> getAllSeats() {
-        return allSeats;
+    public Map<String, Seat> getAllSeats() {
+        return seatsByPos;
     }
 
     public void  setPurchasedSeats(Seat seat, String token) {
         seat.setAvailable(false);
-        purchasedSeats.put(token, seat);
+        purchasedSeatsByToken.put(token, seat);
     }
 
-    public Map<String, Seat> getPurchasedSeats(){
-        return purchasedSeats;
+    public Map<String, Seat> getPurchasedSeats() {
+        return purchasedSeatsByToken;
+    }
+
+    private String key(int row, int col) {
+        return row + ":" + col;
+    }
+
+    public Seat getPurchasedSeatByToken(String token) {
+        return purchasedSeatsByToken.get(token);
     }
 }
