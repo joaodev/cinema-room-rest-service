@@ -2,6 +2,7 @@ package br.com.joaodev.cinemaroomrestservice.controller;
 
 import br.com.joaodev.cinemaroomrestservice.exception.SeatAlreadyPurchasedException;
 import br.com.joaodev.cinemaroomrestservice.exception.SeatOutOfBoundsException;
+import br.com.joaodev.cinemaroomrestservice.exception.WrongTokenException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -18,6 +19,11 @@ public class ApiExceptionHandler {
 
     @ExceptionHandler(SeatAlreadyPurchasedException.class)
     public ResponseEntity<Map<String, String>> handleAlreadyPurchased(SeatAlreadyPurchasedException ex) {
+        return ResponseEntity.badRequest().body(Map.of("error", ex.getMessage()));
+    }
+
+    @ExceptionHandler(WrongTokenException.class)
+    public ResponseEntity<Map<String, String>> handleWrongToken(WrongTokenException ex) {
         return ResponseEntity.badRequest().body(Map.of("error", ex.getMessage()));
     }
 }
